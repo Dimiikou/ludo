@@ -29,6 +29,22 @@ public class Board {
         }
     }
 
+    /**
+     * Führt einen Spielzug für die übergebene Figur aus.
+     * <p>
+     * Die Figur wird um die angegebene Anzahl an Feldern bewegt, sofern dies erlaubt ist.
+     * Dabei gelten folgende Bedingungen:
+     * <ul>
+     *   <li>Das Zielfeld darf nicht von einer Figur des eigenen Teams besetzt sein.</li>
+     *   <li>Beim Einlaufen in die Zielfelder darf die maximale Feldanzahl nicht überschritten werden.</li>
+     *   <li>Gegnerische Figuren auf dem Zielfeld werden ins "Zuhause" zurückgeworfen.</li>
+     * </ul>
+     *
+     * @param figure Die zu bewegende Spielfigur.
+     * @param amount Die Anzahl der zu ziehenden Felder.
+     * @throws InvalidMoveException Wenn der Zug nicht gültig ist.
+     * @throws BoardPositionOccupiedException Wenn das Zielfeld unrechtmäßig besetzt ist.
+     */
     public void moveFigure(Figure figure, int amount) throws InvalidMoveException, BoardPositionOccupiedException {
         int currentTileId = figure.getLocationTileId();
         int targetTileId = currentTileId + amount;
@@ -73,6 +89,11 @@ public class Board {
         figure.setLocationTileId(targetTileId);
     }
 
+    /**
+     * Findet die Zielfelder des gewünschten Teams
+     * @param color Farbe des Teams
+     * @return Liste an Tile
+     */
     public List<Tile> getFinishTiles(Color color) {
         return this.tiles.stream()
                 .filter(tile -> tile.getTileType() == TileType.FINISH_TILE && tile.getTeamTileColor() == color)
@@ -80,12 +101,22 @@ public class Board {
                 .toList();
     }
 
+    /**
+     * Findet alle Figuren einer Teamfarbe
+     * @param color Farbe der gesuchten Figuren
+     * @return Liste an Figure
+     */
     public List<Figure> getFiguresByColor(Color color) {
         return this.figures.stream()
                 .filter(figure -> figure.getColor() == color)
                 .toList();
     }
 
+    /**
+     * Findet das Startfeld des gewünschten Teams
+     * @param color Farbe des Teams
+     * @return Tile
+     */
     public Tile getTeamStartingTile(Color color) {
         return this.tiles.stream()
                 .filter(tile -> tile.getTileType() == TileType.START_TILE && tile.getTeamTileColor() == color)
@@ -93,16 +124,31 @@ public class Board {
                 .orElse(null);
     }
 
+    /**
+     * Gibt das gesuchte Feld anhand seiner Id zurück
+     * @param id TileId
+     * @return Das gefundene Feld als Optional
+     */
     public Optional<Tile> getTileById(int id) {
         return this.tiles.stream()
                 .filter(tile -> tile.getTileId() == id)
                 .findFirst();
     }
 
+    /**
+     *
+     * Prüft, ob bereits eine eigene Figur auf dem Feld vorhanden ist
+     * @param tileId TileId des zu prüfenden Feldes
+     * @param color Farbe der Figuren welche dort nicht stehen dürfen
+     * @return true / false
+     */
     private boolean isTileOccupiedByOwnTeam(int tileId, Color color) {
         return this.figures.stream().anyMatch(figure -> figure.getLocationTileId() == tileId && figure.getColor() == color);
     }
 
+    /**
+     * Erstellt alle benötigten Felder für das Spiel samt Kategorisierung der TileTypes
+     */
     private void initializeTiles() {
         this.tiles = new ArrayList<>();
         int totalTiles = 40 + 4 * 4;

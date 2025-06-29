@@ -23,6 +23,9 @@ public class LupoGame {
     private List<Player> players;
     private Board board;
 
+    /**
+     * Initialisiert das Spiel mit den Spielern und erstellt das dazugehörige Spielbrett
+     */
     public void initializeGame() {
         this.players = new ArrayList<>();
 
@@ -35,6 +38,9 @@ public class LupoGame {
         this.board = new Board(this.players);
     }
 
+    /**
+     * Startet die Spiellogik und damit einhergehend auch den Spielprozess
+     */
     public void startGame() {
         determinePlayerSequence();
 
@@ -57,6 +63,10 @@ public class LupoGame {
         System.out.println("HEHEHE");
     }
 
+    /**
+     * Ermittelt, ob und wenn wer das Spiel gewonnen hat.
+     * @return Objekt des Spielers der gewonnen hat, wenn keiner, dann null
+     */
     private Player getWinner() {
         for (Player player : this.players) {
             Color teamColor = player.getTeamColor();
@@ -75,6 +85,10 @@ public class LupoGame {
         return null;
     }
 
+    /**
+     * Wird ausgeführt, wenn ein Spieler an der Reihe mit Würfeln ist
+     * @param player Spieler welcher am Zug ist
+     */
     private void performPlayersTurn(Player player) {
         // Wir prüfen ob der Spieler bereits eine Figur im Spielfeld hat.
         // wenn nein darf er dreimal würfeln. Bei einem Pasch setzen wir eine Figur
@@ -120,6 +134,12 @@ public class LupoGame {
         }
     }
 
+    /**
+     * Ermittelt ob der Spieler eine Figur auf dem Spielfeld hat.
+     * Dazu zählen nicht die im "Zuhause" und auch nicht die im Ziel
+     * @param color Farbe des Teams welchem die Figur gehören soll
+     * @return true / false
+     */
     private boolean playerHasFigureInField(Color color) {
         List<Figure> figuresInGame = this.board.getFiguresByColor(color).stream()
                 .filter(figure -> {
@@ -131,6 +151,10 @@ public class LupoGame {
         return !figuresInGame.isEmpty();
     }
 
+    /**
+     * Wird zu Beginn des Spiels ausgeführt um zu ermitteln in welcher Reihenfolge gewürfelt wird.
+     * Jeder Spieler würfelt einmal - die Reihenfolge ermittelt sich dann durch absteigende Anzahl der geworfenen Augen
+     */
     private void determinePlayerSequence() {
         HashMap<Integer, Integer> playerThrows = new HashMap<>();
         for (Player player : this.players) {
@@ -147,6 +171,12 @@ public class LupoGame {
         }
     }
 
+    /**
+     * Ermittelt den Spieler anhand seiner Id
+     * @param playerId Id des gesuchten Spielers
+     * @return den gefundenen Spieler passend zur Id
+     * @throws PlayerNotFoundException Es konnte kein Spieler mit der Id gefunden werden
+     */
     private Player getPlayerById(int playerId) throws PlayerNotFoundException {
         return this.players.stream()
                 .filter(player -> player.getPlayerId() == playerId)
@@ -154,6 +184,12 @@ public class LupoGame {
                 .orElseThrow(() -> new PlayerNotFoundException("Player with ID:" + playerId + " not found"));
     }
 
+    /**
+     * Ermittelt den Spieler anhand seiner Würfelposition
+     * @param rollPosition Index der Würfelposition
+     * @return den gefundenen Spieler passend zur Id
+     * @throws PlayerNotFoundException konnte kein Spieler mit der Würfelposition gefunden werden
+     */
     private Player getPlayerByRollPosition(int rollPosition) throws PlayerNotFoundException {
         return this.players.stream()
                 .filter(player -> player.getRollPosition() == rollPosition)
