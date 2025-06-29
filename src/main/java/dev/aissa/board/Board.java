@@ -1,5 +1,8 @@
-package dev.aissa.entity;
+package dev.aissa.board;
 
+import dev.aissa.exceptions.BoardPositionOccupiedException;
+import dev.aissa.exceptions.InvalidMoveException;
+import dev.aissa.player.Player;
 import dev.aissa.enums.Color;
 import dev.aissa.enums.TileType;
 import lombok.Data;
@@ -26,63 +29,48 @@ public class Board {
         }
     }
 
-    public void moveFigure(Figure figure, int amount) {
+    public void moveFigure(Figure figure, int amount) throws InvalidMoveException, BoardPositionOccupiedException {
         int currentTileId = figure.getLocationTileId();
         int targetTileId = currentTileId + amount;
         Color figureColor = figure.getColor();
 
-        // Alle regulären Felder durchlaufen, um EntryTile zu erkennen
+        if (isTileOccupiedByOwnTeam(targetTileId, figureColor)) {
+            throw new BoardPositionOccupiedException("Tile with ID: " + targetTileId + " already occupied");
+        }
+
         List<Tile> passedTiles = this.tiles.stream()
                 .filter(tile -> tile.getTileId() > currentTileId && tile.getTileId() <= targetTileId)
                 .toList();
 
         Optional<Tile> passedEntryTile = passedTiles.stream()
-                .filter(tile -> tile.getTileType() == TileType.ENTRY_TILE && tile.getTeamTileColor() == figureColor)
+                .filter(tile -> tile.getTileType() == TileType.ENTRY_TILE)
                 .findFirst();
 
-        // Wenn wir durch das EntryTile müssen
         if (passedEntryTile.isPresent()) {
             Tile entryTile = passedEntryTile.get();
-            int tilesToReach = entryTile.getTileId() - currentTileId;
-            int tilesToMove = amount - tilesToReach;
-
-            if (tilesToMove > 4) {
-                return;
+            int tilesLeftAfterReachingEntryTile = entryTile.getTileId() - currentTileId;
+            if (tilesLeftAfterReachingEntryTile > 4) {
+                throw new InvalidMoveException("Target exceeds Board Size");
             }
 
-            Tile finishTarget = getFinishTiles(figureColor).get(tilesToMove);
-            if (isTileOccupiedByOwnTeam(finishTarget.getTileId(), figureColor)) {
-                return;
-            }
-
-            figure.setLocationTileId(finishTarget.getTileId());
+            figure.setLocationTileId(getFinishTiles(figureColor).get(tilesLeftAfterReachingEntryTile).getTileId());
             return;
         }
 
-        // Normales Feld ohne EntryTile-Passage
         if (targetTileId < 40) {
-            if (isTileOccupiedByOwnTeam(targetTileId, figureColor)) {
-                return;
-            }
-
-            // Gegner schlagen
+            figure.setLocationTileId(targetTileId);
             figures.stream()
                     .filter(other -> other.getLocationTileId() == targetTileId && other.getColor() != figureColor)
                     .forEach(other -> other.setLocationTileId(-1));
-
-            figure.setLocationTileId(targetTileId);
             return;
         }
 
-        // Letzter Notfall-Fall: Direktes Ziehen auf Zielfeld (wenn erlaubt)
         List<Tile> finishTiles = getFinishTiles(figureColor);
-        if (finishTiles.stream().anyMatch(tile -> tile.getTileId() == targetTileId)) {
-            if (isTileOccupiedByOwnTeam(targetTileId, figureColor)) {
-                return;
-            }
-
-            figure.setLocationTileId(targetTileId);
+        if (finishTiles.stream().noneMatch(tile -> tile.getTileId() == targetTileId && !isTileOccupiedByOwnTeam(tile.getTileId(), figureColor))) {
+            throw new InvalidMoveException("Target is not reachable by Player");
         }
+
+        figure.setLocationTileId(targetTileId);
     }
 
     public List<Tile> getFinishTiles(Color color) {

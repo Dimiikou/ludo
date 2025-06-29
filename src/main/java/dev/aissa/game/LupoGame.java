@@ -1,5 +1,12 @@
-package dev.aissa.entity;
+package dev.aissa.game;
 
+import dev.aissa.board.Board;
+import dev.aissa.board.Figure;
+import dev.aissa.board.Tile;
+import dev.aissa.exceptions.BoardPositionOccupiedException;
+import dev.aissa.exceptions.InvalidMoveException;
+import dev.aissa.exceptions.PlayerNotFoundException;
+import dev.aissa.player.Player;
 import dev.aissa.enums.Color;
 import dev.aissa.enums.TileType;
 import lombok.Data;
@@ -101,14 +108,17 @@ public class LupoGame {
 
         // TODO: Figur im UI auswählbar machen
         Figure figure = this.board.getFiguresByColor(player.getTeamColor()).getFirst();
-        this.board.moveFigure(figure, totalDiceAmount);
+        try {
+            this.board.moveFigure(figure, totalDiceAmount);
+        } catch (BoardPositionOccupiedException | InvalidMoveException ex) {
+            System.out.println(ex.getMessage());
+        }
 
         // Bei Pasch darf man nochmal
         if (diceAmountOne == diceAmountTwo) {
             performPlayersTurn(player);
         }
     }
-
 
     private boolean playerHasFigureInField(Color color) {
         List<Figure> figuresInGame = this.board.getFiguresByColor(color).stream()
@@ -137,17 +147,17 @@ public class LupoGame {
         }
     }
 
-    private Player getPlayerById(int playerId) {
+    private Player getPlayerById(int playerId) throws PlayerNotFoundException {
         return this.players.stream()
                 .filter(player -> player.getPlayerId() == playerId)
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> new PlayerNotFoundException("Player with ID:" + playerId + " not found"));
     }
 
-    private Player getPlayerByRollPosition(int rollPosition) {
+    private Player getPlayerByRollPosition(int rollPosition) throws PlayerNotFoundException {
         return this.players.stream()
                 .filter(player -> player.getRollPosition() == rollPosition)
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> new PlayerNotFoundException("Player with RollPosition:" + rollPosition + " not found"));
     }
 }

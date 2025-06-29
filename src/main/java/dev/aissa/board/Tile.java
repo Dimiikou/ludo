@@ -1,4 +1,4 @@
-package dev.aissa.entity;
+package dev.aissa.board;
 
 import dev.aissa.enums.Color;
 import dev.aissa.enums.TileType;

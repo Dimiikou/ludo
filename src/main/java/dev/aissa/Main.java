@@ -1,6 +1,6 @@
 package dev.aissa;
 
-import dev.aissa.entity.LupoGame;
+import dev.aissa.game.LupoGame;
 
 public class Main {
 

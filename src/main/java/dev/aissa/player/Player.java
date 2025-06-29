@@ -1,4 +1,4 @@
-package dev.aissa.entity;
+package dev.aissa.player;
 
 import dev.aissa.enums.Color;
 import lombok.AllArgsConstructor;
