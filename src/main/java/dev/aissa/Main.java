@@ -1,8 +1,12 @@
 package dev.aissa;
 
+import dev.aissa.entity.LupoGame;
+
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Hello, World!");
+        LupoGame game = new LupoGame();
+        game.initializeGame();
+        game.startGame();
     }
 }
