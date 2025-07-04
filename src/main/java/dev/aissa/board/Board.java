@@ -9,6 +9,7 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +28,24 @@ public class Board {
                 this.figures.add(new Figure(-1, player.getTeamColor()));
             }
         }
+    }
+
+    public HashMap<Tile, Figure> getTilesWithFigures() {
+        HashMap<Tile, Figure> tilesWithFigures = new HashMap<>();
+        for (Figure figure : figures) {
+            Tile tile = tiles.stream()
+                    .filter(currentTile -> currentTile.getTileId() == figure.getLocationTileId())
+                    .findFirst()
+                    .orElse(null);
+
+            if (tile == null) {
+                continue;
+            }
+
+            tilesWithFigures.put(tile, figure);
+        }
+
+        return tilesWithFigures;
     }
 
     /**

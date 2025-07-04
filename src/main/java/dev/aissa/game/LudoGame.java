@@ -122,7 +122,7 @@ public class LudoGame extends Application {
                 // Index-Zahl in die Mitte der Zelle setzen
                 String text = String.valueOf(row * grid + col);
                 graphicsContext.setFill(Color.BLACK);
-//                graphicsContext.fillText(text, x + cellSize * 0.3, y + cellSize * 0.6);
+                //graphicsContext.fillText(text, x + cellSize * 0.3, y + cellSize * 0.6);
             }
         }
 
@@ -133,6 +133,12 @@ public class LudoGame extends Application {
             }
 
             fillCellById(tile.getCellId(), tile.getTeamTileColor());
+        }
+
+        HashMap<Tile, Figure> tilesWithFigures = this.gameService.getBoard().getTilesWithFigures();
+
+        for (Tile tile : tilesWithFigures.keySet()) {
+            drawFigureOnCell(tile.getCellId(), tilesWithFigures.get(tile).getColor());
         }
     }
 
@@ -154,6 +160,32 @@ public class LudoGame extends Application {
 
         String text = String.valueOf(id);
         gc.setFill(Color.BLACK);
-//        gc.fillText(text, x + cellSize * 0.3, y + cellSize * 0.6);
+        //gc.fillText(text, x + cellSize * 0.3, y + cellSize * 0.6);
     }
+
+    private void drawFigureOnCell(int id, Color color) {
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+
+        int row = id / grid;
+        int col = id % grid;
+
+        double x = col * cellSize;
+        double y = row * cellSize;
+
+        // Mittelpunkt der Zelle berechnen
+        double centerX = x + cellSize / 2;
+        double centerY = y + cellSize / 2;
+        double radius = cellSize * 0.4;
+
+        // Zeichne den Kreis (Spielfigur)
+        gc.setFill(color);
+        gc.fillOval(centerX - radius / 2, centerY - radius / 2, radius, radius);
+
+        // Schwarze Umrandung der Figur
+        gc.setStroke(Color.BLACK);
+        gc.setLineWidth(4.0);
+        gc.strokeOval(centerX - radius / 2, centerY - radius / 2, radius, radius);
+        gc.setLineWidth(1.0);
+    }
+
 }
