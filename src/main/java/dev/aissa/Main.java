@@ -1,12 +1,11 @@
 package dev.aissa;
 
-import dev.aissa.game.LupoGame;
+import dev.aissa.ui.LudoUI;
+import javafx.application.Application;
 
 public class Main {
 
     public static void main(String[] args) {
-        LupoGame game = new LupoGame();
-        game.initializeGame();
-        game.startGame();
+        Application.launch(LudoUI.class, args);
     }
 }

@@ -1,22 +1,28 @@
 package dev.aissa.player;
 
-import dev.aissa.enums.Color;
-import lombok.AllArgsConstructor;
+import dev.aissa.board.Pawn;
 import lombok.Data;
 
+import java.util.List;
+import java.util.stream.IntStream;
+
 @Data
-@AllArgsConstructor
 public class Player {
     private int playerId;
     private String name;
-    private Color teamColor;
-    private int rollPosition;
+    private int rollOrder;
 
-    public int rollSingleDice() {
-        return (int) (Math.random() * 6) + 1;
+    private List<Pawn> pawns;
+
+    public Player(int playerId, String name) {
+        this.playerId = playerId;
+        this.name = name;
+
+        this.pawns = IntStream.range(0, 4)
+                .mapToObj(index -> new Pawn(index, -1, this.playerId))
+                .toList();
     }
 
-    public int[] rollDoubleDice() {
-        return new int[] { rollSingleDice(), rollSingleDice() };
-    }
+
+
 }
