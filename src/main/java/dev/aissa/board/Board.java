@@ -32,8 +32,7 @@ public class Board {
     /**
      * Führt einen Spielzug für die übergebene Figur aus.
      * <p>
-     * Die Figur wird um die angegebene Anzahl an Feldern bewegt, sofern dies erlaubt ist.
-     * Dabei gelten folgende Bedingungen:
+     * Die Figur wird um die angegebene Anzahl an Feldern bewegt, sofern dies erlaubt ist. Dabei gelten folgende Bedingungen:
      * <ul>
      *   <li>Das Zielfeld darf nicht von einer Figur des eigenen Teams besetzt sein.</li>
      *   <li>Beim Einlaufen in die Zielfelder darf die maximale Feldanzahl nicht überschritten werden.</li>
@@ -42,7 +41,8 @@ public class Board {
      *
      * @param figure Die zu bewegende Spielfigur.
      * @param amount Die Anzahl der zu ziehenden Felder.
-     * @throws InvalidMoveException Wenn der Zug nicht gültig ist.
+     *
+     * @throws InvalidMoveException           Wenn der Zug nicht gültig ist.
      * @throws BoardPositionOccupiedException Wenn das Zielfeld unrechtmäßig besetzt ist.
      */
     public void moveFigure(Figure figure, int amount) throws InvalidMoveException, BoardPositionOccupiedException {
@@ -91,7 +91,9 @@ public class Board {
 
     /**
      * Findet die Zielfelder des gewünschten Teams
+     *
      * @param color Farbe des Teams
+     *
      * @return Liste an Tile
      */
     public List<Tile> getFinishTiles(Color color) {
@@ -103,7 +105,9 @@ public class Board {
 
     /**
      * Findet alle Figuren einer Teamfarbe
+     *
      * @param color Farbe der gesuchten Figuren
+     *
      * @return Liste an Figure
      */
     public List<Figure> getFiguresByColor(Color color) {
@@ -114,7 +118,9 @@ public class Board {
 
     /**
      * Findet das Startfeld des gewünschten Teams
+     *
      * @param color Farbe des Teams
+     *
      * @return Tile
      */
     public Tile getTeamStartingTile(Color color) {
@@ -126,7 +132,9 @@ public class Board {
 
     /**
      * Gibt das gesuchte Feld anhand seiner Id zurück
+     *
      * @param id TileId
+     *
      * @return Das gefundene Feld als Optional
      */
     public Optional<Tile> getTileById(int id) {
@@ -136,10 +144,11 @@ public class Board {
     }
 
     /**
-     *
      * Prüft, ob bereits eine eigene Figur auf dem Feld vorhanden ist
+     *
      * @param tileId TileId des zu prüfenden Feldes
-     * @param color Farbe der Figuren welche dort nicht stehen dürfen
+     * @param color  Farbe der Figuren welche dort nicht stehen dürfen
+     *
      * @return true / false
      */
     private boolean isTileOccupiedByOwnTeam(int tileId, Color color) {
@@ -151,16 +160,18 @@ public class Board {
      */
     private void initializeTiles() {
         this.tiles = new ArrayList<>();
-        int totalTiles = 40 + 4 * 4;
+        int totalTiles = 40 + 4 * 4 + 4 * 4;// 40 Wege, 4 mal 4 Finishtiles, 4 mal 4 Hometiles
+        List<Integer> cellIds = getCellIds();
         for (int i = 0; i < totalTiles; i++) {
-            this.tiles.add(new Tile(this.tiles.size(), TileType.NORMAL_TILE, Color.BLACK, 1));
+            this.tiles.add(new Tile(this.tiles.size(), TileType.NORMAL_TILE, Color.WHITE, cellIds.get(this.tiles.size())));
         }
 
         // Setzt Start, Zielfelder und Entryfelder für die jeweiligen Teams.
         int startingTile = 0;
-        int entryTile = 9;
+        int entryTile = 39;
         int finishTiles = 40;
-        for (Color color : List.of(Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW)) {
+        int homeTiles = 56;
+        for (Color color : List.of(Color.BLUE, Color.YELLOW, Color.GREEN, Color.RED)) {
             getTileById(startingTile).ifPresent(tile -> {
                 tile.setTileType(TileType.START_TILE);
                 tile.setTeamTileColor(color);
@@ -173,8 +184,19 @@ public class Board {
             });
             entryTile += 10;
 
+            if (entryTile > 40) {
+                entryTile -= 40;
+            }
+
+            for (int homeTileIndex = 0; homeTileIndex < 4; homeTileIndex++) {
+                getTileById(homeTiles++).ifPresent(tile -> {
+                    tile.setTileType(TileType.HOME_TILE);
+                    tile.setTeamTileColor(color);
+                });
+            }
+
             for (int finishTileIndex = 0; finishTileIndex < 4; finishTileIndex++) {
-                if (finishTiles > this.tiles.size()) {
+                if (finishTiles > this.tiles.size() + 16) {
                     break;
                 }
 
@@ -184,5 +206,12 @@ public class Board {
                 });
             }
         }
+    }
+
+    private List<Integer> getCellIds() {
+        return List.of(186, 171, 156, 141, 126, 125, 124, 123, 122, 107, 92, 93, 94, 95, 96, 81, 66, 51,
+                36, 37, 38, 53, 68, 83, 98, 99, 100, 101, 102, 117, 132, 131, 130, 129, 128, 143, 158, 173, 188, 187,
+                172, 157, 142, 127, 108, 109, 110, 111, 52, 67, 82, 97, 116, 115, 114, 113,
+                182, 183, 167, 168, 32, 33, 47, 48, 41, 42, 56, 57, 176, 177, 191, 192);
     }
 }

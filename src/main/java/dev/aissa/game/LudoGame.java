@@ -122,10 +122,18 @@ public class LudoGame extends Application {
                 // Index-Zahl in die Mitte der Zelle setzen
                 String text = String.valueOf(row * grid + col);
                 graphicsContext.setFill(Color.BLACK);
-                graphicsContext.fillText(text, x + cellSize * 0.3, y + cellSize * 0.6);
+//                graphicsContext.fillText(text, x + cellSize * 0.3, y + cellSize * 0.6);
             }
         }
 
+        List<Tile> tiles = this.gameService.getBoard().getTiles();
+        for (Tile tile : tiles) {
+            if (tile.getTeamTileColor() == Color.BLACK) {
+                continue;
+            }
+
+            fillCellById(tile.getCellId(), tile.getTeamTileColor());
+        }
     }
 
     private void fillCellById(int id, Color color) {
@@ -146,8 +154,6 @@ public class LudoGame extends Application {
 
         String text = String.valueOf(id);
         gc.setFill(Color.BLACK);
-        gc.fillText(text, x + cellSize * 0.3, y + cellSize * 0.6);
-
-
+//        gc.fillText(text, x + cellSize * 0.3, y + cellSize * 0.6);
     }
 }
