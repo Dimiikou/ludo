@@ -7,5 +7,6 @@ public enum TileType {
     NORMAL_TILE,
     FINISH_TILE,
     START_TILE,
-    ENTRY_TILE
+    ENTRY_TILE,
+    HOME_TILE
 }

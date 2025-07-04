@@ -3,8 +3,8 @@ package dev.aissa.board;
 import dev.aissa.exceptions.BoardPositionOccupiedException;
 import dev.aissa.exceptions.InvalidMoveException;
 import dev.aissa.player.Player;
-import dev.aissa.enums.Color;
 import dev.aissa.enums.TileType;
+import javafx.scene.paint.Color;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -153,7 +153,7 @@ public class Board {
         this.tiles = new ArrayList<>();
         int totalTiles = 40 + 4 * 4;
         for (int i = 0; i < totalTiles; i++) {
-            this.tiles.add(new Tile(this.tiles.size(), TileType.NORMAL_TILE, Color.NONE));
+            this.tiles.add(new Tile(this.tiles.size(), TileType.NORMAL_TILE, Color.BLACK, 1));
         }
 
         // Setzt Start, Zielfelder und Entryfelder für die jeweiligen Teams.

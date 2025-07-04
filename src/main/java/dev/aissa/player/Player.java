@@ -1,6 +1,6 @@
 package dev.aissa.player;
 
-import dev.aissa.enums.Color;
+import javafx.scene.paint.Color;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -14,9 +14,5 @@ public class Player {
 
     public int rollSingleDice() {
         return (int) (Math.random() * 6) + 1;
-    }
-
-    public int[] rollDoubleDice() {
-        return new int[] { rollSingleDice(), rollSingleDice() };
     }
 }

@@ -1,6 +1,6 @@
 package dev.aissa.board;
 
-import dev.aissa.enums.Color;
+import javafx.scene.paint.Color;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
