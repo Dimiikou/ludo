@@ -1,12 +1,13 @@
 package dev.aissa.player;
 
+import dev.aissa.interfaces.IDiceRoller;
 import javafx.scene.paint.Color;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class Player {
+public class Player implements IDiceRoller {
     private int playerId;
     private String name;
     private Color teamColor;
