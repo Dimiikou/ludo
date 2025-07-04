@@ -76,16 +76,10 @@ public class GameService {
             return rolledAmount;
         }
 
-        // Bei einer 6 darf man nochmal würfeln.
-        if (rolledAmount != 6) {
-            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-            return rolledAmount;
-        }
-
         // Wir prüfen ob der Spieler bereits eine Figur im Spielfeld hat.
         // wenn nein, setzen wir bei einer 6 eine Figur
         // auf das Startfeld und er darf dann Würfeln um zu ziehen.
-        if (!playerHasFigureInField(player.getTeamColor())) {
+        if (!playerHasFigureInField(player.getTeamColor()) && rolledAmount == 6) {
             Figure figure = this.board.getFiguresByColor(player.getTeamColor()).stream()
                     .filter(currentFigure -> currentFigure.getLocationTileId() == -1)
                     .findFirst()
@@ -102,10 +96,17 @@ public class GameService {
         }
 
         // Hier ist das ganz normale Würfelszenario
-        for(Figure figure : this.board.getFiguresByColor(player.getTeamColor())) {
+        for(Figure figure : this.board.getMovableFiguresByColor(player.getTeamColor())) {
             try {
-                this.board.moveFigure(figure, rolledAmount);
+                if (this.board.moveFigure(figure, rolledAmount)) {
+                    break;
+                }
             } catch (BoardPositionOccupiedException | InvalidMoveException _) { }
+        }
+
+        // Bei einer 6 darf man nochmal würfeln.
+        if (rolledAmount != 6) {
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
         }
 
         return rolledAmount;

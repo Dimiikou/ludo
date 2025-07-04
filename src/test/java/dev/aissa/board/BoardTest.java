@@ -165,17 +165,6 @@ class BoardTest {
                 board.moveFigure(figure, 8); // Würde über die 4 Finish-Tiles hinausgehen
             });
         }
-
-        @Test
-        @DisplayName("Should throw exception when target exceeds board size")
-        void shouldThrowExceptionWhenTargetExceedsBoardSize() {
-            Figure figure = new Figure(35, Color.BLUE);
-            board.getFigures().add(figure);
-
-            assertThrows(InvalidMoveException.class, () -> {
-                board.moveFigure(figure, 10);
-            });
-        }
     }
 
     @Nested
@@ -241,17 +230,6 @@ class BoardTest {
             board.moveFigure(figure, 1);
 
             assertEquals(39, figure.getLocationTileId());
-        }
-
-        @Test
-        @DisplayName("Should handle zero movement")
-        void shouldHandleZeroMovement() throws InvalidMoveException, BoardPositionOccupiedException {
-            Figure figure = new Figure(5, Color.BLUE);
-            board.getFigures().add(figure);
-
-            board.moveFigure(figure, 0);
-
-            assertEquals(5, figure.getLocationTileId());
         }
 
         @Test

@@ -64,7 +64,7 @@ public class Board {
      * @throws InvalidMoveException           Wenn der Zug nicht gültig ist.
      * @throws BoardPositionOccupiedException Wenn das Zielfeld unrechtmäßig besetzt ist.
      */
-    public void moveFigure(Figure figure, int amount) throws InvalidMoveException, BoardPositionOccupiedException {
+    public boolean moveFigure(Figure figure, int amount) throws InvalidMoveException, BoardPositionOccupiedException {
         int currentTileId = figure.getLocationTileId();
         int targetTileId = currentTileId + amount;
         Color figureColor = figure.getColor();
@@ -78,7 +78,7 @@ public class Board {
                 .toList();
 
         Optional<Tile> passedEntryTile = passedTiles.stream()
-                .filter(tile -> tile.getTileType() == TileType.ENTRY_TILE)
+                .filter(tile -> tile.getTileType() == TileType.ENTRY_TILE && tile.getTeamTileColor() == figureColor)
                 .findFirst();
 
         if (passedEntryTile.isPresent()) {
@@ -89,7 +89,7 @@ public class Board {
             }
 
             figure.setLocationTileId(getFinishTiles(figureColor).get(tilesLeftAfterReachingEntryTile).getTileId());
-            return;
+            return true;
         }
 
         if (targetTileId < 40) {
@@ -97,15 +97,26 @@ public class Board {
             figures.stream()
                     .filter(other -> other.getLocationTileId() == targetTileId && other.getColor() != figureColor)
                     .forEach(other -> other.setLocationTileId(-1));
-            return;
+            return true;
         }
 
         List<Tile> finishTiles = getFinishTiles(figureColor);
         if (finishTiles.stream().noneMatch(tile -> tile.getTileId() == targetTileId && !isTileOccupiedByOwnTeam(tile.getTileId(), figureColor))) {
-            throw new InvalidMoveException("Target is not reachable by Player");
+            Tile currentTile = this.tiles.stream()
+                    .filter(tile -> tile.getTileId() == currentTileId)
+                    .findFirst()
+                    .orElse(null);
+
+            if (currentTile == null || (currentTile.getTeamTileColor() == figureColor && (currentTile.getTileType() == TileType.ENTRY_TILE || currentTile.getTileType() == TileType.FINISH_TILE))) {
+                return false;
+            }
+
+            figure.setLocationTileId(targetTileId - 40);
+            return true;
         }
 
         figure.setLocationTileId(targetTileId);
+        return true;
     }
 
     /**
@@ -132,6 +143,19 @@ public class Board {
     public List<Figure> getFiguresByColor(Color color) {
         return this.figures.stream()
                 .filter(figure -> figure.getColor() == color)
+                .toList();
+    }
+
+    /**
+     * Findet alle bewegbaren Figuren einer Teamfarbe
+     *
+     * @param color Farbe der gesuchten Figuren
+     *
+     * @return Liste an Figure
+     */
+    public List<Figure> getMovableFiguresByColor(Color color) {
+        return this.figures.stream()
+                .filter(figure -> figure.getColor() == color && figure.getLocationTileId() != -1)
                 .toList();
     }
 
